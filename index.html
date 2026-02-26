@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS AI - Smart Assistant</title>
+    
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Main Container -->
+    <div class="container-fluid py-4">
+        <div class="container">
+            <!-- Header with Animated Badge -->
+            <div class="text-center mb-4 animate__animated animate__fadeInDown">
+                <span class="ai-badge">
+                    <i class="bi bi-stars me-2"></i>NEXUS AI
+                    <span class="status-indicator"></span>
+                </span>
+                <h1 class="display-4 fw-bold text-white mt-3">Intelligence at your <span class="gradient-text">Fingertips</span></h1>
+                <p class="text-white-50">Powered by Google Gemini • Real-time responses • Smart conversations</p>
+            </div>
+
+            <!-- API Key Modal (Shows on first visit) -->
+            <div class="modal fade" id="apiKeyModal" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-glow">
+                        <div class="modal-content bg-dark text-white border-0">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-key-fill text-warning me-2"></i>
+                                    Enter Your API Key
+                                </h5>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-white-50 small">Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank" class="text-info">Google MakerSuite</a></p>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-secondary border-secondary text-white">
+                                        <i class="bi bi-key"></i>
+                                    </span>
+                                    <input type="password" class="form-control bg-dark text-white border-secondary" id="apiKeyInput" placeholder="Paste your API key here">
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="saveKeyCheck">
+                                    <label class="form-check-label text-white-50 small">
+                                        Save key locally (stays on your device)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-primary w-100" id="saveApiKey">
+                                    <i class="bi bi-check2-circle me-2"></i>Initialize AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Card -->
+            <div class="chat-card animate__animated animate__fadeInUp">
+                <div class="row g-0">
+                    <!-- Sidebar -->
+                    <div class="col-lg-3 col-md-4">
+                        <div class="sidebar">
+                            <div class="p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="mb-0 fw-bold text-white">
+                                        <i class="bi bi-chat-square-text me-2 text-primary"></i>Chats
+                                    </h5>
+                                    <button class="btn btn-sm btn-outline-primary" id="newChatBtn">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Search -->
+                                <div class="search-box mb-3">
+                                    <i class="bi bi-search"></i>
+                                    <input type="text" class="form-control" id="searchChats" placeholder="Search conversations...">
+                                </div>
+                                
+                                <!-- Conversations List -->
+                                <div class="conversations-list" id="conversationsList">
+                                    <!-- JS will populate -->
+                                </div>
+                                
+                                <!-- API Status -->
+                                <div class="api-status mt-3 p-2 rounded" id="apiStatus">
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-dot-warning me-2"></div>
+                                        <small class="text-white-50">API not configured</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Chat Area -->
+                    <div class="col-lg-9 col-md-8">
+                        <div class="chat-area">
+                            <!-- Header -->
+                            <div class="chat-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="ai-avatar me-3">
+                                        <i class="bi bi-cpu"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-white">NEXUS AI Assistant</h6>
+                                        <div class="d-flex align-items-center">
+                                            <span class="status-dot-success me-2"></span>
+                                            <small class="text-white-50">Active • Gemini Pro</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="header-actions">
+                                    <button class="btn btn-sm btn-outline-secondary me-2" id="clearChatBtn">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="settingsBtn">
+                                        <i class="bi bi-gear"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Messages Container -->
+                            <div class="messages-container" id="messagesContainer">
+                                <div class="welcome-screen">
+                                    <div class="welcome-content">
+                                        <div class="ai-logo-glow mb-4">
+                                            <i class="bi bi-cpu"></i>
+                                        </div>
+                                        <h3 class="text-white mb-3">Welcome to NEXUS AI</h3>
+                                        <p class="text-white-50 mb-4">Start a conversation with advanced AI. Ask questions, get code, brainstorm ideas, or just chat!</p>
+                                        
+                                        <!-- Quick Prompts -->
+                                        <div class="quick-prompts">
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <button class="prompt-chip" data-prompt="Write a Python function to calculate fibonacci">
+                                                        <i class="bi bi-code-slash me-2"></i>Write code
+                                                    </button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button class="prompt-chip" data-prompt="Explain quantum computing simply">
+                                                        <i class="bi bi-question-circle me-2"></i>Explain concept
+                                                    </button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button class="prompt-chip" data-prompt="Give me 5 creative startup ideas in AI">
+                                                        <i class="bi bi-lightbulb me-2"></i>Brainstorm ideas
+                                                    </button>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button class="prompt-chip" data-prompt="Write a motivational quote about success">
+                                                        <i class="bi bi-chat-quote me-2"></i>Quote
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Input Area -->
+                            <div class="input-area">
+                                <!-- Typing indicator (hidden by default) -->
+                                <div class="typing-indicator-wrapper" id="typingIndicator" style="display: none;">
+                                    <div class="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                    <small class="text-white-50 ms-2">AI is thinking...</small>
+                                </div>
+                                
+                                <!-- Message Input -->
+                                <div class="input-wrapper">
+                                    <textarea class="form-control" id="messageInput" rows="1" placeholder="Ask me anything..."></textarea>
+                                    <button class="btn btn-primary send-btn" id="sendButton" disabled>
+                                        <i class="bi bi-arrow-up-short"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-white-50">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Press Enter to send, Shift+Enter for new line
+                                    </small>
+                                    <small class="text-white-50" id="tokenCount">0 tokens</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Particles.js for background -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Our main JS -->
+    <script src="script.js"></script>
+</body>
+</html>
